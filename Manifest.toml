@@ -116,6 +116,12 @@ git-tree-sha1 = "6c9671364c68c1158ac2524ac881536195b7e7bc"
 uuid = "7ad07ef1-bdf2-5661-9d2b-286fd4296dac"
 version = "0.2.0"
 
+[[CovarianceMatrices]]
+deps = ["GLM", "LinearAlgebra", "Statistics", "StatsBase", "StatsModels"]
+git-tree-sha1 = "5d8af3a69c018035799bba666a47517d547c0610"
+uuid = "60f91f6f-d783-54cb-84f9-544141854719"
+version = "0.9.1"
+
 [[DataAPI]]
 git-tree-sha1 = "ad84f52c0b8f05aa20839484dbaf01690b41ff84"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"

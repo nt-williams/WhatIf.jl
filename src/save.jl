@@ -1,5 +1,5 @@
 using Gadfly
-import Cairo, Fontconfig
+import Cairo
 
 export saveplot
 
