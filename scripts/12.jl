@@ -22,12 +22,12 @@ fitᵩ = glm(@formula(qsmk ~ sex + race + age + age^2 + education +
     nhefs, Binomial(), LogitLink(), 
     contrasts = Dict(:education => DummyCoding(), 
                      :exercise => DummyCoding(), 
-                     :active => DummyCoding()))
+                     :active => DummyCoding()));
 
 ϕ = 1 ./ [s == 1 ? p : 1 - p for (s, p) in zip(nhefs.qsmk, predict(fitᵩ))]
 describe(ϕ)
 
-fitᵨ = glm(@formula(wt82_71 ~ qsmk), nhefs, Normal(), IdentityLink(), wts = ϕ)
+fitᵨ = glm(@formula(wt82_71 ~ qsmk), nhefs, Normal(), IdentityLink(), wts = ϕ);
 WhatIf.coeftable(fitᵨ, robust = true)
 
 # Program 12.3
@@ -42,7 +42,7 @@ WhatIf.coeftable(fitₛ, robust = true)
 nhefs₂ = filter(row -> row.smokeintensity <= 25, nhefs);
 
 fit_num = glm(@formula(smkintensity82_71 ~ 1), 
-              nhefs₂, Normal(), IdentityLink())
+              nhefs₂, Normal(), IdentityLink());
 
 fit_denom = glm(@formula(smkintensity82_71 ~ sex + race + age + age^2 + education + 
                     smokeintensity + smokeintensity^2 + smokeyrs + smokeyrs^2 + 
@@ -50,7 +50,7 @@ fit_denom = glm(@formula(smkintensity82_71 ~ sex + race + age + age^2 + educatio
            nhefs₂, Normal(), IdentityLink(), 
            contrasts = Dict(:education => DummyCoding(), 
                             :exercise => DummyCoding(), 
-                            :active => DummyCoding()))
+                            :active => DummyCoding()));
 
 σ̂num, σ̂denom = rmse(fit_num), rmse(fit_denom)
 ϕdens = [pdf(Normal(ŷnum, σ̂num), x) / pdf(Normal(ŷdenom, σ̂denom), x) for (x, ŷnum, ŷdenom) in zip(nhefs₂.smkintensity82_71, predict(fit_num), predict(fit_denom))]
@@ -64,3 +64,10 @@ glm(@formula(death ~ qsmk), nhefs, Binomial(), LogitLink(), wts = ϕsw) |>
     x -> WhatIf.coeftable(x, robust = true)
 
 # Program 12.6
+denom = predict(fitᵩ)
+num = glm(@formula(qsmk ~ sex), nhefs, Binomial(), LogitLink()) |> predict
+ϕsw = [s == 1 ? n / d : (1 - n) / (1 - d) for (s, n, d) in zip(nhefs.qsmk, num, denom)]
+describe(ϕsw)
+
+glm(@formula(wt82_71 ~ qsmk + sex + qsmk*sex), nhefs, Normal(), IdentityLink(), wts = ϕsw) |>
+    x -> WhatIf.coeftable(x)
