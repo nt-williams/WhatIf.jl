@@ -14,7 +14,6 @@ combine(groupby(nhefs, :qsmk),
 
 fit = glm(@formula(wt82_71 ~ qsmk), nhefs, Normal(), IdentityLink())
 predict(fit, DataFrame(qsmk = [0, 1]))
-coeftable(fit)
 
 # Program 12.2
 fitᵩ = glm(@formula(qsmk ~ sex + race + age + age^2 + education + 
@@ -29,7 +28,7 @@ fitᵩ = glm(@formula(qsmk ~ sex + race + age + age^2 + education +
 describe(ϕ)
 
 fitᵨ = glm(@formula(wt82_71 ~ qsmk), nhefs, Normal(), IdentityLink(), wts = ϕ)
-robustci(fitᵨ)
+WhatIf.coeftable(fitᵨ, robust = true)
 
 # Program 12.3
 num = mean(nhefs.qsmk)
@@ -37,7 +36,7 @@ num = mean(nhefs.qsmk)
 describe(ϕsw)
 
 fitₛ = glm(@formula(wt82_71 ~ qsmk), nhefs, Normal(), IdentityLink(), wts = ϕsw)
-robustci(fitₛ)
+WhatIf.coeftable(fitₛ, robust = true)
 
 # Program 12.4
 nhefs₂ = filter(row -> row.smokeintensity <= 25, nhefs);
@@ -58,4 +57,10 @@ fit_denom = glm(@formula(smkintensity82_71 ~ sex + race + age + age^2 + educatio
 describe(ϕdens)
 
 fit_msm = glm(@formula(wt82_71 ~ smkintensity82_71 + smkintensity82_71^2), nhefs₂, Normal(), IdentityLink(), wts = ϕdens)
-robustci(fit_msm)
+WhatIf.coeftable(fit_msm, robust = true)
+
+# Program 12.5
+glm(@formula(death ~ qsmk), nhefs, Binomial(), LogitLink(), wts = ϕsw) |> 
+    x -> WhatIf.coeftable(x, robust = true)
+
+# Program 12.6
